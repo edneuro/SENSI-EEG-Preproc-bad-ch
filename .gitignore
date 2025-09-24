@@ -1,0 +1,5 @@
+# Ignore MATLAB autosave files
+*.asv
+
+# Ignore Folder
+Not Related/*

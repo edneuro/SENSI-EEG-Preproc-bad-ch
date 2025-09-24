@@ -1,37 +1,117 @@
-function Out1 = markSusChs(xIn, fs, INFO, EOG, safeFigs)
+function [susMask, badChList, plotStruct] = markSusChs(xIn, fs, INFO, EOG, saveFigs, saveFolder, saveName)
 
 
+%MARKSUSCHS  Automated suspicious/bad channel detection with interactive review.
+%   [SUSMASK, BADCHLIST, PLOTSTRUCT] = MARKSUSCHS(XIN, FS, INFO, EOG, SAVEFIGS, SAVEFOLDER, SAVENAME)
+%
+%   This function computes automated bad-channel scores from multi-feature
+%   analysis, clusters channels by high-Z events, tags the eye cluster, and
+%   produces figures. An interactive UI then lets the user confirm or override
+%   suspicious/bad channels. Only channels marked red (=bad) in the UI are
+%   returned in BADCHLIST.
+%
+%   INPUTS
+%     XIN         [nCh × nSamp] data matrix (channels × time). Assumed filtered
+%                 and mean-centered. Units in µV.
+%     FS          Scalar sampling rate (Hz).
+%     INFO        Struct with configuration and file info. Required fields:
+%                 INFO.badChs.winSec, hopSec, win_sec, eps, alpha, nCols, ref,
+%                 chMax, minClusterUI. Also INFO.figure_folder and INFO.subject
+%                 if saving figures.
+%     EOG         Vector of EOG channel indices, or struct with index fields.
+%                 Used to define the “eye cluster,” which is forced ≤ suspicious.
+%     SAVEFIGS    Logical. If true, figures are saved to SAVEFOLDER.
+%     SAVEFOLDER  Path for saving figures (created if missing). If empty and
+%                 SAVEFIGS=true, current folder is used.
+%     SAVENAME    Base filename/prefix for saved figures. If empty and
+%                 SAVEFIGS=true, 'BadChannelFig' is used.
+%
+%   OUTPUTS
+%     SUSMASK     [nCh × 1] integer flags per channel:
+%                   0 = good, 1 = suspicious, 2 = bad
+%                 (EOG channels forced down to ≤1).
+%     BADCHLIST   Vector of channel indices marked red in the review UI.
+%     PLOTSTRUCT  Struct containing feature values, cluster assignments, EOG
+%                 mask, final status, and saving info, for downstream plotting.
+%
+%   METHOD
+%     1) Neighbor dissimilarity:
+%          - XIN windowed (winSec, hopSec).
+%          - Correlations with neighbors → dissimilarity = 1 - |corr|.
+%          - Smoothed, thresholded. nDissVal = fraction of windows above threshold.
+%
+%     2) Max amplitude:
+%          - nMax = max(|XIN|) per channel.
+%          - z_maxes = z-score of log(nMax).
+%          - Channels with nMax ≥ chMax (µV) are forced bad.
+%
+%     3) Variability:
+%          - z_var  = z-score of log(var(XIN)) over entire recording.
+%          - z_var2 = z-score of the range of smoothed windowed variance.
+%
+%     4) Suspicious mask:
+%          - susMask = logical combination of nDissVal, z_maxes, z_var, z_var2.
+%          - Channels exceeding chMax forced to 2 (bad).
+%          - EOG channels forced down to ≤1.
+%
+%     5) Clustering:
+%          - Robust Z-scores (abs(Z) > zRoboustThreshold), pooled in win_sec*FS blocks.
+%          - Jaccard distance matrix → cluster assignment (eps threshold).
+%          - Eye cluster = cluster with most EOG indices.
+%
+%   FIGURES
+%     fig1: Cluster graph + reordered distance heatmap
+%     fig2: Channel score overview (neighbor dissimilarity, max amplitude,
+%           variance features; open markers = eye cluster)
+%     fig3: UI for channel review (saved before/after if SAVEFIGS=true)
+%
+%   DEPENDENCIES
+%     zScoreRobust, makeWindowsFromX, neighborCorrFromWindows, smoothFeature,
+%     jaccardDistanceChannels, clusterByThreshold, plotClustersGraphAndHeatmapV2,
+%     plotBefore, reviewBadChsUI
+%
+%
+%   NOTES
+%     • Data must be channels × time. Transpose if needed.
+%     • Eye cluster is auto-forced ≤ suspicious but can be set to bad manually.
+%     • If SAVEFIGS=true, UI will freeze temporarily while saving. Wait until
+%       the scroll bar reappears, then continue review. Click "Save" in the UI
+%       to finalize status updates.
+%     • Thresholds are heuristic and may require tuning by dataset.
+
+fprintf('\n -------- Detecting Bad Channels ---------\n')
+
+
+%% Loading Variables
+
+zRoboustThreshold = 14;
 
 % Windowing Varaibles
-winSec = 10; % Time window (sec) - Max, Corr, and Var
-hopSec = winSec; % Time skip per window (sec)
+winSec = INFO.badChs.winSec; % Time window (sec) - Max, Corr, and Var. Original = 10
+hopSec = INFO.badChs.hopSec; % Time skip per window (sec)
 
 % Clustering variables
-win_sec = 0.200; % Maxpool window in sec
-eps = 0.7; % Distance Matrix Clustering Thresshold
+win_sec = INFO.badChs.win_sec; % Maxpool window in sec. Original = 0.200
+eps = INFO.badChs.eps; % Distance Matrix Clustering Thresshold. Original = 0.7
 
-% Plot Settings
-alpha = .25;
-nCols = 2;
-ref = 30;
+% UI Plot Settings
+alpha = INFO.badChs.alpha;   % plot transparency. Original = .25
+nCols = INFO.badChs.nCols;   % number of columns. Original = 2
+ref = INFO.badChs.ref;       % reference channel. Original = 36 for EGI
 
+channel_max = INFO.badChs.chMax; % Channels with samples that reach this value will be declared as bad
 
-
-% === Creating Output folder ===
 % Image saving
-if safeFigs
-    figure_folder = [INFO.preprocFigDir, filesep, 'BadChannels'];
-    if exist(figure_folder, 'dir') == 0 
-        mkdir(figure_folder)
-    end
-    
-    subject = [INFO.fSaveStr, INFO.sStr, '_', INFO.blkStrUse];
-    INFO.figure_folder = figure_folder;
-    INFO.subject = subject;
+if saveFigs
+    INFO.figure_folder = saveFolder;
+    INFO.subject = saveName;
 end
 
-Z = zScoreRobust(xIn); % robust Z-score
 
+%% === General Chekcs (Time Dependent) ====
+
+
+Z = zScoreRobust(xIn); % robust Z-score
 
 
 % === General Chekcs (Time Dependent) ====
@@ -50,6 +130,7 @@ nDissThres = nDissMov;
 nDissThres(nDissThres<0.3) = 0;
 
 nDissVal = mean(nDissThres,2); % for suspecious score
+nDissValb = mean(nDissMov,2); % plotting before fix
 
 
 % 2) Max Absolute Values
@@ -57,15 +138,16 @@ nMax = max(abs(xIn),[],2);
 
 z_maxes = zscore(log(nMax));
 % z_maxes(z_maxes < 0) = 0; 
+z_maxesb = z_maxes; % Plotting before fix
 z_maxes(z_maxes < 2) = 0; % for suspecious score
 
-bad_max = nMax >= 1000; % This marks the Channel as bad
+bad_max = nMax >= channel_max; % This marks the Channel as bad
 
 
 % 3) Variability
-
 nVar = var(xIn, [], 2);
 z_var = zscore(log(nVar));
+z_varb = abs(z_var); % plotting before fix
 z_var(z_var >= -2.5 & z_var <= 2) = 0;
 z_var = abs(z_var);
 
@@ -73,19 +155,18 @@ z_var = abs(z_var);
 nVar = squeeze(var(xWin, 0, 2, 'omitnan'));   % → [nCh x nWin]
 smoothWin = 10;
 nVarMov = smoothFeature(nVar, smoothWin);
-nVars = var(nVarMov,[],2);
+% nVars = var(nVarMov,[],2);
 nVars = max(nVarMov,[],2) - min(nVarMov,[],2);
 z_var2 = abs(zscore(log(nVars)));
+z_var2b = z_var2; % plotting before fix
 z_var2(z_var2 < 2) = 0;
 
 
+%% === Clustering via Z-Score Robust Dissimilarity ====
 
-
-% === Clustering via Z-Score Robust Dissimilarity ====
-Z = zScoreRobust(xIn); % robust Z-score
-
+% Finding high Z values for robust score
 zFilt = abs(Z);
-zFilt(zFilt <= 14) = 0; % Only tag high Z-score
+zFilt(zFilt <= zRoboustThreshold) = 0; % Only tag high Z-score
 
 columns_check = sum(zFilt,1); % Remove columns without bad Z-scores
 zFilt2 = zFilt(:,logical(columns_check)); 
@@ -108,8 +189,8 @@ Xlogical = logical(Xmax_blocks);
 % Clustering Distance Matrix
 [idx, info] = clusterByThreshold(D, eps);   % link channels with distance <= 0.3
 
-disp(info.nComp);                          % number of clusters
-disp(info.compSizes);                      % sizes of clusters
+fprintf('\t# Clusters = %d\n', info.nComp)  % number of clusters
+fprintf('\t# Channels per cluster = %s\n', num2str(info.compSizes.')) % sizes of clusters                    
 
 % Grouping by Cluster
 K = max(idx);                  % number of clusters
@@ -123,16 +204,20 @@ end
 
 % Graph “constellation view”
 % plotClustersGraphAndHeatmapV2(D, eps, idx, {'eye related','good','terrible'});
-plotClustersGraphAndHeatmapV2(D, eps, idx);
+fig1 = plotClustersGraphAndHeatmapV2(D, eps, idx);
+
+if saveFigs
+    saveas(fig1, fullfile(INFO.figure_folder, [INFO.subject '_03a_BadChsClusters.png']));
+end
 
 
-
-% === Define Bad and Suspecious Channels ====
+%% === Define Bad and Suspecious Channels ====
 susMask = sum([nDissVal, z_maxes, z_var, z_var2],2);
 susMask = double(logical(susMask));
 susMask(bad_max == 1) = 2;
 
-% Make sure EOG channels are not Bad
+
+%% Make sure EOG channels are not Bad
 if isstruct(EOG)
     EOG = struct2cell(EOG);
     EOG = cat(2,EOG{:});
@@ -141,9 +226,9 @@ susMask(EOG(susMask(EOG) == 2)) = 1; % Change EOG Bad to Suspecious
 
 susChs = find(susMask~=0);
 
-%%
 
-% === Initializing Clustering analysis ====
+%% === Channels to Plot ====
+
 suspectIds = cell(K,1);
 susLabels = suspectIds;
 eyeCheck = zeros(K,1);
@@ -159,34 +244,68 @@ end
 [~, eyeChCluster] = max(eyeCheck);
 susLabels{eyeChCluster} = [susLabels{eyeChCluster}, ' - Eye Chs'];
 
+
+% Getting channels to plot (susIds)
 susIds = {};
 susLabs = {};
 for c = 1:K
     susId = suspectIds{c};
-    susMember = ismember(susId,susChs);
-    if sum(susMember) > 0
-        susIds{end+1} = susId(susMember);
+    % susMember = ismember(susId,susChs);
+    susMembers = intersect(susId,susChs);
+    if length(susId) < INFO.badChs.minClusterUI
+        susMembers = susId;
+    end
+    if sum(susMembers) > 0
+        susIds{end+1} = susMembers;
         susLabs{end+1} = susLabels{c};
     end
 end
 
-%%
+
+%% === Suspecious Channel Flags Figure ===
+
+plotStruct.nDissVal = nDissVal;
+plotStruct.nDissValb = nDissValb;
+
+plotStruct.z_maxes = z_maxes;
+plotStruct.z_maxesb = z_maxesb;
+
+plotStruct.z_var = z_var;
+plotStruct.z_varb = z_varb;
+
+plotStruct.z_var2 = z_var2;
+plotStruct.z_var2b = z_var2b;
+
+plotStruct.nCh    = size(xIn,1);
+
+eyeIdx = suspectIds{eyeChCluster};   % eye channels = whole eye cluster
+plotStruct.nCh    = size(xIn,1);
+allIdx = (1:nCh).';
+
+plotStruct.isEye = ismember(allIdx, eyeIdx);
+plotStruct.status = susMask; % status from susMask (0=good, 1=suspicious, 2=bad)
 
 
+fig2 = plotBefore(plotStruct);
+
+if saveFigs
+    saveas(fig2, fullfile(INFO.figure_folder, [INFO.subject '_03b_BadChsScores.png']));
+end
+
+
+%% === UI Bad Channel Check ===
 
 [susMask, badChList] = reviewBadChsUI(xIn,[],susMask,susIds,...
-    susLabs,INFO,nCols,ref,alpha,0);
+    susLabs,INFO,nCols,ref,alpha,1);
 
-
-
-
-
-
-
-
-
-
-
-
+% Updaing Plotting Struct
+plotStruct.status = susMask;
+plotStruct.badChList = badChList;
+plotStruct.winSec = winSec;
+plotStruct.hopSec = hopSec;
+plotStruct.saveFigs = saveFigs;
+plotStruct.INFO = INFO;
+plotStruct.fs = fs;
+plotStruct.clusters = chClusters;
 
 end

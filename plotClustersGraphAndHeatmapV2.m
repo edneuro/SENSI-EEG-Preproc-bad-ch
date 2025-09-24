@@ -1,4 +1,4 @@
-function plotClustersGraphAndHeatmapV2(D, eps, idx, clusterNames)
+function fig = plotClustersGraphAndHeatmapV2(D, eps, idx, clusterNames)
 %PLOTCLUSTERSGRAPHANDHEATMAPV2
 %   plotClustersGraphAndHeatmap_simple(D, eps)
 %   plotClustersGraphAndHeatmap_simple(D, eps, idx)
@@ -47,7 +47,7 @@ function plotClustersGraphAndHeatmapV2(D, eps, idx, clusterNames)
     cmap = repmat(base, ceil(k/size(base,1)), 1);
     cmap = cmap(1:k,:);
 
-    figure('Name','Clusters: Graph + Heatmap','Color','w','Position',[100 100 1200 540]);
+    fig = figure('Name','Clusters: Graph + Heatmap','Color','w','Position',[100 100 1200 540]);
 
     % ================== Left: Force-directed graph ==================
     subplot(1,2,1);
@@ -163,4 +163,6 @@ function plotClustersGraphAndHeatmapV2(D, eps, idx, clusterNames)
         yline(b+0.5, 'k-', 'LineWidth', 0.8);
     end
     hold off;
+
+    sgtitle('Channels Cluster Structure')
 end

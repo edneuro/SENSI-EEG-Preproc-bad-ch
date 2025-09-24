@@ -179,7 +179,7 @@ function [maskOut,badList] = reviewBadChsUI(X,t,maskIn,groups,titles,INFO,gridCo
     end
 
     if saveFigs
-        saveFullCanvas('before');
+        saveFullCanvas('03c_uiBadChs_before');
     end
 
 
@@ -265,7 +265,7 @@ function [maskOut,badList] = reviewBadChsUI(X,t,maskIn,groups,titles,INFO,gridCo
     function onDone(~,~)
         % Take an "after" snapshot before returning
         if saveFigs
-            saveFullCanvas('after');
+            saveFullCanvas('03d_uiBadChs_after');
         end
         
         uiresume(fig);   % lets the main function finish and return maskOut, badList
@@ -295,7 +295,9 @@ function [maskOut,badList] = reviewBadChsUI(X,t,maskIn,groups,titles,INFO,gridCo
     
             % Option 1: export just the canvas as a tall PNG/PDF
             % (Works even if figure would be “larger than screen”)
+            warning('off','all')
             exportgraphics(canvas, [target '.png'], 'Resolution', 200);
+            warning('on','all')
             % exportgraphics(canvas, [target '.pdf'], 'ContentType','vector');
     
         catch ME

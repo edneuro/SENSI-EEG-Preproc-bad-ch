@@ -385,7 +385,7 @@ sgtitle('Before and After Bad Channel Selection');
 
 
 if saveFigs
-    saveas(fig, fullfile(INFO.figure_folder, [INFO.subject '_03e_BadChsScores.png']));
+    saveas(fig, fullfile(INFO.figure_folder, [INFO.subject '_03d_BadChsScores.png']));
 end
 
 

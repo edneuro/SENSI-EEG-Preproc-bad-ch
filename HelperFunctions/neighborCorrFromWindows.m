@@ -14,7 +14,7 @@ function [R, Rcell] = neighborCorrFromWindows(Xwin, forceNNeighbors, mode, neigh
 % - Per window: de-mean each channel with nanmedian (omit NaNs).
 % - Correlations use 'rows','pairwise' (NaN-safe).
 % - 'medianRef': corr(channel, median(neighbors))  ← robust (recommended)
-%   'meanOfPairs': mean_j corr(channel, neighbor_j) ← mirrors your original
+%   'meanOfPairs': mean_j corr(channel, neighbor_j)
 
     if nargin < 2 || isempty(forceNNeighbors), forceNNeighbors = []; end
     if nargin < 3 || isempty(mode), mode = 'medianRef'; end

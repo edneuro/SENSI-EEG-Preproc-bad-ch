@@ -15,7 +15,7 @@ function [susMask, badChList, plotStruct] = markSusChs(xIn, fs, INFO, EOG, saveF
 %                 and mean-centered. Units in µV.
 %     FS          Scalar sampling rate (Hz).
 %     INFO        Struct with configuration and file info. Required fields:
-%                 INFO.badChs.winSec, hopSec, win_sec, eps, alpha, nCols, ref,
+%                 INFO.badChs.winSec, hopSec, win_sec, eps, alpha, nCols, nRows, ref,
 %                 chMax, minClusterUI. Also INFO.figure_folder and INFO.subject
 %                 if saving figures.
 %     EOG         Vector of EOG channel indices, or struct with index fields.
@@ -116,7 +116,7 @@ Z = zScoreRobust(xIn); % robust Z-score
 
 % === General Chekcs (Time Dependent) ====
 
-% 1) Neightbor Dissimilarity 
+% 1) Neighbor Dissimilarity 
 [xWin, ~] = makeWindowsFromX(xIn, fs, winSec, hopSec);
 
 [nCorr, ~] = neighborCorrFromWindows(xWin);
@@ -295,8 +295,8 @@ end
 
 %% === UI Bad Channel Check ===
 
-[susMask, badChList] = reviewBadChsUI(xIn,[],susMask,susIds,...
-    susLabs,INFO,nCols,ref,alpha,1);
+[susMask, badChList] = reviewBadChsPaged(xIn,[],susMask,susIds,...
+    susLabs,INFO,1);
 
 % Updaing Plotting Struct
 plotStruct.status = susMask;

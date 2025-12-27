@@ -24,6 +24,9 @@ function [maskOut,badList] = reviewBadChsPaged(X,t,maskIn,groups,titles,INFO,sav
     if nargin<5||isempty(titles), titles = repmat({''},1,numel(groups)); end
     if nargin<7, saveFigs = 0; end
 
+    sgtitleFontSize = 16;
+    titleFontSize = 16;
+
     [nCh,nT] = size(X);
     maskOut  = double(maskIn(:));
     assert(all(ismember(maskOut,[0 1 2])),'maskIn must be 0/1/2');
@@ -118,7 +121,7 @@ function [maskOut,badList] = reviewBadChsPaged(X,t,maskIn,groups,titles,INFO,sav
         delete(findall(content,'Type','matlab.ui.container.TileLayout'));
         tl = tiledlayout(content,nRows,nCols, 'Padding','compact','TileSpacing','compact');
         currentTL = tl;
-        sgtitle(tl,titles{cl},'FontSize',14,'FontWeight','bold');
+        sgtitle(tl,titles{cl},'FontSize',sgtitleFontSize,'FontWeight','bold');
 
         allCh = groups{cl}(:);
         chs   = allCh(pages(p).i0 : min(pages(p).i1,numel(allCh)));
@@ -218,7 +221,7 @@ function [maskOut,badList] = reviewBadChsPaged(X,t,maskIn,groups,titles,INFO,sav
           case 2, col=colBad;   ttl='bad';     tc=tcolBad;
         end
         hd.Color = rgba(col,alpha);
-        title(ax,sprintf('Ch %d (%s)',ch,ttl),'Color',tc,'FontWeight','bold');
+        title(ax,sprintf('Ch %d (%s)',ch,ttl),'Color',tc,'FontWeight','bold','FontSize',titleFontSize);
         delete(findobj(ax,'Tag','stateBadge'));
         glyph='✓'; if state==1, glyph='?'; elseif state==2, glyph='✗'; end
         text(ax,0.02,0.90,glyph,'Units','normalized','FontSize',12,'FontWeight','bold','Color',col,'Tag','stateBadge','HitTest','off','VerticalAlignment','top');

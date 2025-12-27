@@ -7,6 +7,7 @@ nDissValb = plotStruct.nDissValb;
 
 z_maxes = plotStruct.z_maxes;
 z_maxesb = plotStruct.z_maxesb;
+channel_max = plotStruct.z_max_thres;
 
 z_var = plotStruct.z_var;
 z_varb = plotStruct.z_varb;
@@ -109,7 +110,7 @@ title('Neighbor dissimilarity (time-aggregated)');
 ylabel('dissimilarity');
 xlim([0.5 nCh+0.5]); xticks(5:5:nCh); grid on;
 
-% ---------- (2) Max amplitude (z-score of log |x|); red = max ≥ 1000 µV ----------
+% ---------- (2) Max amplitude (z-score of log |x|); red = max ≥ channel_max µV ----------
 
 nexttile(3); hold on;
 
@@ -134,7 +135,7 @@ for s = 0:2
     end
 end
 
-title('Max amplitude - Red marks channels with max ≥ 1000 μV');
+title(['Max amplitude - Red marks channels with max ≥', num2str(channel_max), 'μV']);
 ylabel('z-score of log |x|');
 xlim([0.5 nCh+0.5]); xticks(5:5:nCh); grid on;
 

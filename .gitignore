@@ -1,5 +1,13 @@
 # Ignore MATLAB autosave files
 *.asv
 
-# Ignore Folder
+
+# Ignore Folders
+
 Not Related/*
+
+ExampleData/*
+!ExampleData/readme.txt
+
+Figures/*
+!Figures/readme.txt

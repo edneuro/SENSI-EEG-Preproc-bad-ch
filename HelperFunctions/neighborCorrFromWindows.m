@@ -3,21 +3,22 @@ function [R, Rcell] = neighborCorrFromWindows(Xwin, forceNNeighbors, mode, neigh
 %
 % Xwin            : [C x L x W] (channels × samples × windows)
 % forceNNeighbors : (optional) integer; if provided, uses neighbors for 1:###
-% mode            : 'medianRef' (default) or 'meanOfPairs'
+% mode            : 'medianOfPairs' (default) or 'medianRef'
 % neighborDir     : (optional) folder containing neighboringElectrodes###.mat
 %
 % Outputs:
-%   R     : [Cused x W] mean neighbor correlation per window
-%   Rcell : {Cused x 1} (only for 'meanOfPairs'), each cell [Nnei x W]
+%   R     : [Cused x W] median neighbor correlation per window
+%   Rcell : {Cused x 1} (only for 'medianOfPairs'), each cell [Nnei x W]
 %
 % Notes:
 % - Per window: de-mean each channel with nanmedian (omit NaNs).
 % - Correlations use 'rows','pairwise' (NaN-safe).
-% - 'medianRef': corr(channel, median(neighbors))  ← robust (recommended)
-%   'meanOfPairs': mean_j corr(channel, neighbor_j)
+% - 'medianOfPairs': median_j corr(channel, neighbor_j) ← (recommended)
+%   'medianRef': corr(channel, median(neighbors))  
+%   
 
     if nargin < 2 || isempty(forceNNeighbors), forceNNeighbors = []; end
-    if nargin < 3 || isempty(mode), mode = 'medianRef'; end
+    if nargin < 3 || isempty(mode), mode = 'medianOfPairs'; end
     if nargin < 4, neighborDir = ''; end
 
     [C, ~, W] = size(Xwin);
@@ -36,7 +37,7 @@ function [R, Rcell] = neighborCorrFromWindows(Xwin, forceNNeighbors, mode, neigh
     neighbors = S.neighbors;
 
     R = nan(Cused, W);
-    if strcmpi(mode, 'meanOfPairs'), Rcell = cell(Cused,1); else, Rcell = []; end
+    if strcmpi(mode, 'medianOfPairs'), Rcell = cell(Cused,1); else, Rcell = []; end
 
     for w = 1:W
         Xw = Xwin(1:Cused, :, w);               % [Cused x L]
@@ -52,7 +53,7 @@ function [R, Rcell] = neighborCorrFromWindows(Xwin, forceNNeighbors, mode, neigh
                     R(c,w) = corr(Xw(c,:).', ref(:), 'rows', 'pairwise');
                 end
 
-            case 'meanofpairs'
+            case 'medianofpairs'
                 for c = 1:Cused
                     nei = neighbors{c};
                     nei = nei(nei>=1 & nei<=Cused & nei~=c);
@@ -61,12 +62,12 @@ function [R, Rcell] = neighborCorrFromWindows(Xwin, forceNNeighbors, mode, neigh
                     for j = 1:numel(nei)
                         rlist(j) = corr(Xw(c,:).', Xw(nei(j),:).', 'rows','pairwise');
                     end
-                    R(c,w) = mean(rlist, 'omitnan');
+                    R(c,w) = median(rlist, 'omitnan');
                     Rcell{c}(:, w) = rlist;
                 end
 
             otherwise
-                error('Unknown mode: %s (use ''medianRef'' or ''meanOfPairs'')', mode);
+                error('Unknown mode: %s (use ''medianRef'' or ''medianOfPairs'')', mode);
         end
     end
 end

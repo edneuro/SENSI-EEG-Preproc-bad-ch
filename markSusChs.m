@@ -99,7 +99,9 @@ alpha = INFO.badChs.alpha;   % plot transparency. Original = .25
 nCols = INFO.badChs.nCols;   % number of columns. Original = 2
 ref = INFO.badChs.ref;       % reference channel. Original = 36 for EGI
 
+% General Checks
 channel_max = INFO.badChs.chMax; % Channels with samples that reach this value will be declared as bad
+neighborDissThresh = INFO.badChs.neighborDissThresh; % NEIGHBOR DISSIMILARITY THRESHOLD
 
 % Image saving
 if saveFigs
@@ -127,7 +129,7 @@ nDissMov = smoothFeature(nDiss, smoothWin);
 
 % nDissThres = nDissMov > 0.4;
 nDissThres = nDissMov;
-nDissThres(nDissThres<0.3) = 0;
+nDissThres(nDissThres<neighborDissThresh) = 0;
 
 nDissVal = mean(nDissThres,2); % for suspecious score
 nDissValb = mean(nDissMov,2); % plotting before fix
@@ -244,6 +246,11 @@ end
 [~, eyeChCluster] = max(eyeCheck);
 susLabels{eyeChCluster} = [susLabels{eyeChCluster}, ' - Eye Chs'];
 
+% --- NEW: force eye-cluster channels to be at most "suspicious" (≤1) ---
+eyeIdx = suspectIds{eyeChCluster};   % eye channels = whole eye cluster
+isEyeBad = (susMask(eyeIdx) == 2);
+susMask(eyeIdx(isEyeBad)) = 1;
+% ----------------------------------------------------------------------
 
 % Getting channels to plot (susIds)
 susIds = {};
@@ -269,6 +276,7 @@ plotStruct.nDissValb = nDissValb;
 
 plotStruct.z_maxes = z_maxes;
 plotStruct.z_maxesb = z_maxesb;
+plotStruct.z_max_thres = channel_max;
 
 plotStruct.z_var = z_var;
 plotStruct.z_varb = z_varb;
@@ -284,6 +292,7 @@ allIdx = (1:nCh).';
 
 plotStruct.isEye = ismember(allIdx, eyeIdx);
 plotStruct.status = susMask; % status from susMask (0=good, 1=suspicious, 2=bad)
+
 
 
 fig2 = plotBefore(plotStruct);

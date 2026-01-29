@@ -341,110 +341,110 @@ end
 if saveOut, cd(outDir); save neighboringElectrodes257.mat neighbors
 end
 
-%% 256 electrodes
-
-neighbors = NEIGHBORS;
-
-% 0 - Electrode(s) to remove
-rm257to256 = [257]; 
-
-% 1 - Remove exluded electrodes from cell array
-neighbors(rm257to256) = []; 
-
-% 2 - Go through remaining electrodes and remove mention of excluded 
-% electrodes from each array in the cell array
-for i = 1:length(neighbors)
-   neighbors{i}(ismember(neighbors{i}, rm257to256)) = []; 
-   
-   % 3 - Ensure each element is a column vector
-   neighbors{i} = neighbors{i}(:);
-   
-      
-   % 4 - No need to do electrode renumbering
-end
-
-if saveOut, cd(outDir); save neighboringElectrodes256.mat neighbors
-end
-
-%% 213 electrodes
-
-neighbors = NEIGHBORS;
-
-load exclude256to212.mat % Works for 257 --> 213 as well
-rm257to213 = exclude256to212; 
-neighbors(rm257to213) = [];
-for i = 1:length(neighbors)
-   neighbors{i}(ismember(neighbors{i}, rm257to213)) = [];
-   neighbors{i} = neighbors{i}(:);
-   neighbors{i} = c257to213(neighbors{i});
-end
-clear rm25* exclude25*
-
-if saveOut, cd(outDir); save neighboringElectrodes213.mat neighbors
-end
-
-%% 212 electrodes
-
-neighbors = NEIGHBORS;
-
-% First remove the vertex
-rm257to256 = [257];
-neighbors(rm257to256) = []; 
-for i = 1:length(neighbors)
-   neighbors{i}(ismember(neighbors{i}, rm257to256)) = []; 
-end
-
-% Then reduce remaining 256 to 212
-load exclude256to212.mat
-rm256to212 = exclude256to212;
-neighbors(rm256to212) = [];
-for i = 1:length(neighbors)
-   neighbors{i}(ismember(neighbors{i}, rm256to212)) = [];
-   neighbors{i} = neighbors{i}(:);
-   neighbors{i} = c256to212(neighbors{i});
-end
-clear rm25* exclude25*
-
-if saveOut, cd(outDir); save neighboringElectrodes212.mat neighbors
-end
-
-%% 195 electrodes
-
-neighbors = NEIGHBORS;
-
-load exclude256to194.mat % Works for 257 --> 195 as well
-rm257to195 = exclude256to194; 
-neighbors(rm257to195) = [];
-for i = 1:length(neighbors)
-   neighbors{i}(ismember(neighbors{i}, rm257to195)) = [];
-   neighbors{i} = neighbors{i}(:);
-   neighbors{i} = c257to195(neighbors{i});
-end
-clear rm25* exclude25*
-
-if saveOut, cd(outDir); save neighboringElectrodes195.mat neighbors
-end
-
-%% 194 electrodes
-
-neighbors = NEIGHBORS;
-
-% First remove the vertex
-rm257to256 = [257];
-neighbors(rm257to256) = []; 
-for i = 1:length(neighbors)
-   neighbors{i}(ismember(neighbors{i}, rm257to256)) = []; 
-end
-
-% Then reduce remaining 256 to 194
-load exclude256to194.mat
-rm256to194 = exclude256to194;
-neighbors(rm256to194) = [];
-for i = 1:length(neighbors)
-   neighbors{i}(ismember(neighbors{i}, rm256to194)) = [];
-   neighbors{i} = neighbors{i}(:);
-   neighbors{i} = c256to194(neighbors{i});
-end
-
-if saveOut, cd(outDir); save neighboringElectrodes194.mat neighbors
-end
+% %% 256 electrodes
+% 
+% neighbors = NEIGHBORS;
+% 
+% % 0 - Electrode(s) to remove
+% rm257to256 = [257]; 
+% 
+% % 1 - Remove exluded electrodes from cell array
+% neighbors(rm257to256) = []; 
+% 
+% % 2 - Go through remaining electrodes and remove mention of excluded 
+% % electrodes from each array in the cell array
+% for i = 1:length(neighbors)
+%    neighbors{i}(ismember(neighbors{i}, rm257to256)) = []; 
+% 
+%    % 3 - Ensure each element is a column vector
+%    neighbors{i} = neighbors{i}(:);
+% 
+% 
+%    % 4 - No need to do electrode renumbering
+% end
+% 
+% if saveOut, cd(outDir); save neighboringElectrodes256.mat neighbors
+% end
+% 
+% %% 213 electrodes
+% 
+% neighbors = NEIGHBORS;
+% 
+% load exclude256to212.mat % Works for 257 --> 213 as well
+% rm257to213 = exclude256to212; 
+% neighbors(rm257to213) = [];
+% for i = 1:length(neighbors)
+%    neighbors{i}(ismember(neighbors{i}, rm257to213)) = [];
+%    neighbors{i} = neighbors{i}(:);
+%    neighbors{i} = c257to213(neighbors{i});
+% end
+% clear rm25* exclude25*
+% 
+% if saveOut, cd(outDir); save neighboringElectrodes213.mat neighbors
+% end
+% 
+% %% 212 electrodes
+% 
+% neighbors = NEIGHBORS;
+% 
+% % First remove the vertex
+% rm257to256 = [257];
+% neighbors(rm257to256) = []; 
+% for i = 1:length(neighbors)
+%    neighbors{i}(ismember(neighbors{i}, rm257to256)) = []; 
+% end
+% 
+% % Then reduce remaining 256 to 212
+% load exclude256to212.mat
+% rm256to212 = exclude256to212;
+% neighbors(rm256to212) = [];
+% for i = 1:length(neighbors)
+%    neighbors{i}(ismember(neighbors{i}, rm256to212)) = [];
+%    neighbors{i} = neighbors{i}(:);
+%    neighbors{i} = c256to212(neighbors{i});
+% end
+% clear rm25* exclude25*
+% 
+% if saveOut, cd(outDir); save neighboringElectrodes212.mat neighbors
+% end
+% 
+% %% 195 electrodes
+% 
+% neighbors = NEIGHBORS;
+% 
+% load exclude256to194.mat % Works for 257 --> 195 as well
+% rm257to195 = exclude256to194; 
+% neighbors(rm257to195) = [];
+% for i = 1:length(neighbors)
+%    neighbors{i}(ismember(neighbors{i}, rm257to195)) = [];
+%    neighbors{i} = neighbors{i}(:);
+%    neighbors{i} = c257to195(neighbors{i});
+% end
+% clear rm25* exclude25*
+% 
+% if saveOut, cd(outDir); save neighboringElectrodes195.mat neighbors
+% end
+% 
+% %% 194 electrodes
+% 
+% neighbors = NEIGHBORS;
+% 
+% % First remove the vertex
+% rm257to256 = [257];
+% neighbors(rm257to256) = []; 
+% for i = 1:length(neighbors)
+%    neighbors{i}(ismember(neighbors{i}, rm257to256)) = []; 
+% end
+% 
+% % Then reduce remaining 256 to 194
+% load exclude256to194.mat
+% rm256to194 = exclude256to194;
+% neighbors(rm256to194) = [];
+% for i = 1:length(neighbors)
+%    neighbors{i}(ismember(neighbors{i}, rm256to194)) = [];
+%    neighbors{i} = neighbors{i}(:);
+%    neighbors{i} = c256to194(neighbors{i});
+% end
+% 
+% if saveOut, cd(outDir); save neighboringElectrodes194.mat neighbors
+% end

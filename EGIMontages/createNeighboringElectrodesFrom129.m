@@ -195,135 +195,135 @@ end
 if saveOut, cd(outDir); save neighboringElectrodes129.mat neighbors
 end
 
-%% 128 electrodes
-
-neighbors = NEIGHBORS;
-
-% 0 - Electrode(s) to remove
-rm129to128 = [129]; 
-
-% 1 - Remove exluded electrodes from cell array
-neighbors(rm129to128) = []; % Remove cell array element 129.
-
-% 2 - Go through remaining electrodes and remove mention of excluded 
-% electrodes from each array in the cell array
-for i = 1:length(neighbors)
-   neighbors{i}(ismember(neighbors{i}, rm129to128)) = []; 
-   
-   % 3 - Ensure each element is a column vector
-   neighbors{i} = neighbors{i}(:);
-   
-      
-   % 4 - No need to do electrode renumbering
-end
-
-if saveOut, cd(outDir); save neighboringElectrodes128.mat neighbors
-end
-
-%% 127 electrodes
-
-neighbors = NEIGHBORS;
-
-% 0 - Electrodes to remove. Here we remove the two cheek electrodes. 
-rm129to127 = [126 127];
-
-% 1 - Remove above elements from the cell array
-neighbors(rm129to127) = [];
-
-% For remaining cell array elements...
-for i = 1:length(neighbors)
-    
-   % 2 - Remove excluded electrodes from each cell array element
-   neighbors{i}(ismember(neighbors{i}, rm129to127)) = [];
-   
-   % 3 - Convert each element to column vector
-   neighbors{i} = neighbors{i}(:);
-   
-   % 4 - Renumber the remaining electrodes so numbers go from 1:127
-   neighbors{i} = c129to127(neighbors{i});
-end
-clear rm129*
-
-if saveOut, cd(outDir); save neighboringElectrodes127.mat neighbors
-end
-
-%% 126 electrodes
-
-neighbors = NEIGHBORS;
-
-% 0 - Electrodes to remove. Here we remove the cheek electrodes and ref. 
-rm129to126 = [126 127 129];
-
-% 1 - Remove above elements from the cell array
-neighbors(rm129to126) = [];
-
-% For remaining cell array elements...
-for i = 1:length(neighbors)
-    
-   % 2 - Remove excluded electrodes from each cell array element
-   neighbors{i}(ismember(neighbors{i}, rm129to126)) = [];
-   
-   % 3 - Convert each element to column vector
-   neighbors{i} = neighbors{i}(:);
-   
-   % 4 - Renumber the remaining electrodes so numbers go from 1:126
-   neighbors{i} = c128to126(neighbors{i});
-end
-clear rm129*
-
-if saveOut, cd(outDir); save neighboringElectrodes126.mat neighbors
-end
-
-%% 125 electrodes
-
-neighbors = NEIGHBORS;
-
-% 0 - Electrodes to remove. Here we remove the four face electrodes
-rm129to125 = [125:128];
-
-% 1 - Remove above elements from the cell array
-neighbors(rm129to125) = [];
-
-% For remaining cell array elements...
-for i = 1:length(neighbors)
-    
-   % 2 - Remove excluded electrodes from each cell array element
-   neighbors{i}(ismember(neighbors{i}, rm129to125)) = [];
-   
-   % 3 - Convert each element to column vector
-   neighbors{i} = neighbors{i}(:);
-   
-   % 4 - Renumber the remaining electrodes so numbers go from 1:125
-   neighbors{i} = c129to125(neighbors{i});
-end
-clear rm129*
-
-if saveOut, cd(outDir); save neighboringElectrodes125.mat neighbors
-end
-
-%% 124 electrodes
-
-neighbors = NEIGHBORS;
-
-% 0 - Electrodes to remove. Here we remove face electrodes + ref. 
-rm129to124 = [125:129];
-
-% 1 - Remove above elements from the cell array
-neighbors(rm129to124) = [];
-
-% For remaining cell array elements...
-for i = 1:length(neighbors)
-    
-   % 2 - Remove excluded electrodes from each cell array element
-   neighbors{i}(ismember(neighbors{i}, rm129to124)) = [];
-   
-   % 3 - Convert each element to column vector
-   neighbors{i} = neighbors{i}(:);
-   
-   % 4 - Renumber the remaining electrodes so numbers go from 1:124
-   neighbors{i} = c128to124(neighbors{i});
-end
-clear rm129*
-
-if saveOut, cd(outDir); save neighboringElectrodes124.mat neighbors
-end
+% %% 128 electrodes
+% 
+% neighbors = NEIGHBORS;
+% 
+% % 0 - Electrode(s) to remove
+% rm129to128 = [129]; 
+% 
+% % 1 - Remove exluded electrodes from cell array
+% neighbors(rm129to128) = []; % Remove cell array element 129.
+% 
+% % 2 - Go through remaining electrodes and remove mention of excluded 
+% % electrodes from each array in the cell array
+% for i = 1:length(neighbors)
+%    neighbors{i}(ismember(neighbors{i}, rm129to128)) = []; 
+% 
+%    % 3 - Ensure each element is a column vector
+%    neighbors{i} = neighbors{i}(:);
+% 
+% 
+%    % 4 - No need to do electrode renumbering
+% end
+% 
+% if saveOut, cd(outDir); save neighboringElectrodes128.mat neighbors
+% end
+% 
+% %% 127 electrodes
+% 
+% neighbors = NEIGHBORS;
+% 
+% % 0 - Electrodes to remove. Here we remove the two cheek electrodes. 
+% rm129to127 = [126 127];
+% 
+% % 1 - Remove above elements from the cell array
+% neighbors(rm129to127) = [];
+% 
+% % For remaining cell array elements...
+% for i = 1:length(neighbors)
+% 
+%    % 2 - Remove excluded electrodes from each cell array element
+%    neighbors{i}(ismember(neighbors{i}, rm129to127)) = [];
+% 
+%    % 3 - Convert each element to column vector
+%    neighbors{i} = neighbors{i}(:);
+% 
+%    % 4 - Renumber the remaining electrodes so numbers go from 1:127
+%    neighbors{i} = c129to127(neighbors{i});
+% end
+% clear rm129*
+% 
+% if saveOut, cd(outDir); save neighboringElectrodes127.mat neighbors
+% end
+% 
+% %% 126 electrodes
+% 
+% neighbors = NEIGHBORS;
+% 
+% % 0 - Electrodes to remove. Here we remove the cheek electrodes and ref. 
+% rm129to126 = [126 127 129];
+% 
+% % 1 - Remove above elements from the cell array
+% neighbors(rm129to126) = [];
+% 
+% % For remaining cell array elements...
+% for i = 1:length(neighbors)
+% 
+%    % 2 - Remove excluded electrodes from each cell array element
+%    neighbors{i}(ismember(neighbors{i}, rm129to126)) = [];
+% 
+%    % 3 - Convert each element to column vector
+%    neighbors{i} = neighbors{i}(:);
+% 
+%    % 4 - Renumber the remaining electrodes so numbers go from 1:126
+%    neighbors{i} = c128to126(neighbors{i});
+% end
+% clear rm129*
+% 
+% if saveOut, cd(outDir); save neighboringElectrodes126.mat neighbors
+% end
+% 
+% %% 125 electrodes
+% 
+% neighbors = NEIGHBORS;
+% 
+% % 0 - Electrodes to remove. Here we remove the four face electrodes
+% rm129to125 = [125:128];
+% 
+% % 1 - Remove above elements from the cell array
+% neighbors(rm129to125) = [];
+% 
+% % For remaining cell array elements...
+% for i = 1:length(neighbors)
+% 
+%    % 2 - Remove excluded electrodes from each cell array element
+%    neighbors{i}(ismember(neighbors{i}, rm129to125)) = [];
+% 
+%    % 3 - Convert each element to column vector
+%    neighbors{i} = neighbors{i}(:);
+% 
+%    % 4 - Renumber the remaining electrodes so numbers go from 1:125
+%    neighbors{i} = c129to125(neighbors{i});
+% end
+% clear rm129*
+% 
+% if saveOut, cd(outDir); save neighboringElectrodes125.mat neighbors
+% end
+% 
+% %% 124 electrodes
+% 
+% neighbors = NEIGHBORS;
+% 
+% % 0 - Electrodes to remove. Here we remove face electrodes + ref. 
+% rm129to124 = [125:129];
+% 
+% % 1 - Remove above elements from the cell array
+% neighbors(rm129to124) = [];
+% 
+% % For remaining cell array elements...
+% for i = 1:length(neighbors)
+% 
+%    % 2 - Remove excluded electrodes from each cell array element
+%    neighbors{i}(ismember(neighbors{i}, rm129to124)) = [];
+% 
+%    % 3 - Convert each element to column vector
+%    neighbors{i} = neighbors{i}(:);
+% 
+%    % 4 - Renumber the remaining electrodes so numbers go from 1:124
+%    neighbors{i} = c128to124(neighbors{i});
+% end
+% clear rm129*
+% 
+% if saveOut, cd(outDir); save neighboringElectrodes124.mat neighbors
+% end

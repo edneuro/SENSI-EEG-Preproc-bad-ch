@@ -17,6 +17,44 @@ function [D, S, O, n] = jaccardDistanceChannels(X, opts)
 %   - If both channels have zero events:               D = 0 (S = 1)
 %   - Else: Jaccard: S = O / (n_i + n_j - O), D = 1 - S
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Reference (please cite):
+%
+% Module Citation:
+%
+% Malave, A. J., & Kaneshiro, B. (2025). Bad-Channel Detection Module (v1.1): A MATLAB
+% framework for semi-automated EEG bad-channel detection and review. Stanford Uni-
+% versity. https://github.com/edneuro/SENSI-EEG-Preproc-bad-ch
+%
+% Preprint Citation
+%
+% Amilcar J Malave and Blair Kaneshiro. “EEG Bad-Channel Detection Using Multi-
+% Feature Thresholding and Co-occurrence of High-Amplitude Transients”. In: bioRxiv
+% (2026). DOI: 10.64898/2026.02.04.703874
+
+% MIT License
+% 
+% Copyright (c) 2025 Amilcar J. Malave, and Blair Kaneshiro.
+% 
+% Permission is hereby granted, free of charge, to any person obtaining a copy
+% of this software and associated documentation files (the "Software"), to deal
+% in the Software without restriction, including without limitation the rights
+% to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+% copies of the Software, and to permit persons to whom the Software is
+% furnished to do so, subject to the following conditions:
+% 
+% The above copyright notice and this permission notice shall be included in all
+% copies or substantial portions of the Software.
+% 
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+% IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+% AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+% OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+% SOFTWARE.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     if nargin < 2, opts = struct; end
     if ~isfield(opts,'threshold'), opts.threshold = []; end
 

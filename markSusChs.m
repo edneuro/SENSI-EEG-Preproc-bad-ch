@@ -68,7 +68,7 @@ function [susMask, badChList, plotStruct] = markSusChs(xIn, fs, INFO, EOG, saveF
 %   DEPENDENCIES
 %     zScoreRobust, makeWindowsFromX, neighborCorrFromWindows, smoothFeature,
 %     jaccardDistanceChannels, clusterByThreshold, plotClustersGraphAndHeatmapV2,
-%     plotBefore, reviewBadChsUI
+%     plotBefore, reviewBadChsPaged
 %
 %
 %   NOTES
@@ -170,20 +170,22 @@ z_var2(z_var2 < 2) = 0;
 zFilt = abs(Z);
 zFilt(zFilt <= zRoboustThreshold) = 0; % Only tag high Z-score
 
-columns_check = sum(zFilt,1); % Remove columns without bad Z-scores
-zFilt2 = zFilt(:,logical(columns_check)); 
-
+% Removed for improved performance
+% columns_check = sum(zFilt,1); % Remove columns without bad Z-scores
+% zFilt2 = zFilt(:,logical(columns_check)); 
 
 win = round(win_sec*fs);
 
 % Max pooling
-[nCh, nSamp] = size(zFilt2);
+[nCh, nSamp] = size(zFilt);
 nBlocks = floor(nSamp / win);         % drop the tail if not divisible
-Xtrim = zFilt2(:, 1:nBlocks*win);
+Xtrim = zFilt(:, 1:nBlocks*win);
 Xb = reshape(Xtrim, nCh, win, nBlocks);   % [ch × win × blocks]
 Xmax_blocks = squeeze(max(Xb, [], 2));    % [ch × blocks]
 
 Xlogical = logical(Xmax_blocks);
+
+
 
 % Distance of robust z-score between channels
 [D,~,~,~] = jaccardDistanceChannels(Xlogical);
@@ -224,6 +226,8 @@ if isstruct(EOG)
     EOG = struct2cell(EOG);
     EOG = cat(2,EOG{:});
 end
+INFO.EOG = EOG;
+
 susMask(EOG(susMask(EOG) == 2)) = 1; % Change EOG Bad to Suspecious
 
 susChs = find(susMask~=0);
@@ -245,6 +249,9 @@ end
 % Selecting Eye Channel Cluster
 [~, eyeChCluster] = max(eyeCheck);
 susLabels{eyeChCluster} = [susLabels{eyeChCluster}, ' - Eye Chs'];
+
+
+
 
 % --- NEW: force eye-cluster channels to be at most "suspicious" (≤1) ---
 eyeIdx = suspectIds{eyeChCluster};   % eye channels = whole eye cluster

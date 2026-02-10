@@ -221,7 +221,11 @@ function [maskOut,badList] = reviewBadChsPaged(X,t,maskIn,groups,titles,INFO,sav
           case 2, col=colBad;   ttl='bad';     tc=tcolBad;
         end
         hd.Color = rgba(col,alpha);
-        title(ax,sprintf('Ch %d (%s)',ch,ttl),'Color',tc,'FontWeight','bold','FontSize',titleFontSize);
+        eogTag = '';
+        if ~isempty(INFO.EOG) && ismember(ch, INFO.EOG)
+            eogTag = ' - EOG';
+        end
+        title(ax,sprintf('Ch %d%s (%s)',ch,eogTag,ttl),'Color',tc,'FontWeight','bold','FontSize',titleFontSize);
         delete(findobj(ax,'Tag','stateBadge'));
         glyph='✓'; if state==1, glyph='?'; elseif state==2, glyph='✗'; end
         text(ax,0.02,0.90,glyph,'Units','normalized','FontSize',12,'FontWeight','bold','Color',col,'Tag','stateBadge','HitTest','off','VerticalAlignment','top');

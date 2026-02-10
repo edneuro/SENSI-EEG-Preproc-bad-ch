@@ -24,7 +24,7 @@ For full details about the dataset contents (file descriptions, variables, and n
 
 ## Reference (please cite)
 
-**Preprint** 
+**Preprint**  
 Amilcar J Malave and Blair Kaneshiro. “EEG Bad-Channel Detection Using Multi-
 Feature Thresholding and Co-occurrence of High-Amplitude Transients”. In: bioRxiv
 (2026). DOI: 10.64898/2026.02.04.703874

@@ -25,16 +25,14 @@ For full details about the dataset contents (file descriptions, variables, and n
 ## Reference (please cite)
 
 **Preprint**  
-Amilcar J. Malave and Blair Kaneshiro (2026). “EEG Bad-Channel Detection Using Multi-
-Feature Thresholding and Co-occurrence of High-Amplitude Transients”. In: bioRxiv. DOI: 10.64898/2026.02.04.703874
+Amilcar J. Malave and Blair Kaneshiro (2026). “EEG Bad-Channel Detection Using Multi-Feature Thresholding and Co-Occurrence of High-Amplitude Transients”. In: bioRxiv. DOI: 10.64898/2026.02.04.703874
 
 **GitHub repository**  
-Amilcar J. Malave and Blair Kaneshiro (2026). Bad-Channel Detection Module (v1.1): A MATLAB
+Amilcar J. Malave and Blair Kaneshiro (2026). Bad-Channel Detection Module (v1.0): A MATLAB
 framework for semi-automated EEG bad-channel detection and review. Stanford University. https://github.com/edneuro/SENSI-EEG-Preproc-bad-ch
 
 **Dataset**  
-Amilcar J. Malave and Blair Kaneshiro (2025). Example EEG data for the SENSI EEG PREPROC Bad-Channel De-
-tection Module [Data set]. Stanford Digital Repository. 
+Amilcar J. Malave and Blair Kaneshiro (2025). Example EEG data for the SENSI EEG PREPROC Bad-Channel Detection Module [Data set]. Stanford Digital Repository. 
 https://doi.org/10.25740/dg856vy8753
 
 

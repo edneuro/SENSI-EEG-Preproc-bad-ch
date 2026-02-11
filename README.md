@@ -33,7 +33,7 @@ Amilcar J. Malave and Blair Kaneshiro (2026). Bad-Channel Detection Module (v1.1
 framework for semi-automated EEG bad-channel detection and review. Stanford University. https://github.com/edneuro/SENSI-EEG-Preproc-bad-ch
 
 **Dataset**  
-Malave, A. J. (2025). Example EEG data for the SENSI EEG PREPROC Bad-Channel De-
+Amilcar J. Malave and Blair Kaneshiro (2025). Example EEG data for the SENSI EEG PREPROC Bad-Channel De-
 tection Module [Data set]. Stanford Digital Repository. 
 https://doi.org/10.25740/dg856vy8753
 
